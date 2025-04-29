@@ -15,18 +15,22 @@ fetch("js/image_sources.json")
     brands.forEach((brand) => {
       const brandButton = document.createElement("button");
       brandButton.textContent = brand;
-      brandButton.addEventListener("click", () => showModels(brand, data));
+      brandButton.addEventListener("click", () => showModels(brand, data, brandButton));
       buttonsArea.appendChild(brandButton);
     });
   })
   .catch((error) => {
-    const outputArea = document.getElementById("outputArea");
-    outputArea.textContent = `Error: ${error.message}`;
+    const buttonsArea = document.getElementById("buttonsArea");
+    buttonsArea.textContent = `Error: ${error.message}`;
   });
 
 // Function to show models for a selected brand
-function showModels(brand, data) {
-  const buttonsArea = document.getElementById("buttonsArea");
+function showModels(brand, data, brandButton) {
+  // Check if models section already exists
+  if (brandButton.nextElementSibling && brandButton.nextElementSibling.classList.contains("models-section")) {
+    brandButton.nextElementSibling.remove(); // Remove existing models section
+    return;
+  }
 
   // Create a new section for models
   const modelsSection = document.createElement("div");
@@ -45,17 +49,21 @@ function showModels(brand, data) {
   models.forEach((model) => {
     const modelButton = document.createElement("button");
     modelButton.textContent = model;
-    modelButton.addEventListener("click", () => showYears(brand, model, data));
+    modelButton.addEventListener("click", () => showYears(brand, model, data, modelButton));
     modelsSection.appendChild(modelButton);
   });
 
-  // Append the new section to the buttons area
-  buttonsArea.appendChild(modelsSection);
+  // Insert the models section after the brand button
+  brandButton.after(modelsSection);
 }
 
 // Function to show years for a selected model
-function showYears(brand, model, data) {
-  const buttonsArea = document.getElementById("buttonsArea");
+function showYears(brand, model, data, modelButton) {
+  // Check if years section already exists
+  if (modelButton.nextElementSibling && modelButton.nextElementSibling.classList.contains("years-section")) {
+    modelButton.nextElementSibling.remove(); // Remove existing years section
+    return;
+  }
 
   // Create a new section for years
   const yearsSection = document.createElement("div");
@@ -74,18 +82,25 @@ function showYears(brand, model, data) {
   years.forEach((year) => {
     const yearButton = document.createElement("button");
     yearButton.textContent = year;
-    yearButton.addEventListener("click", () => showImages(brand, model, year, data));
+    yearButton.addEventListener("click", () => showImages(brand, model, year, data, yearButton));
     yearsSection.appendChild(yearButton);
   });
 
-  // Append the new section to the buttons area
-  buttonsArea.appendChild(yearsSection);
+  // Insert the years section after the model button
+  modelButton.after(yearsSection);
 }
 
 // Function to show images for a selected year
-function showImages(brand, model, year, data) {
-  const outputArea = document.getElementById("outputArea");
-  outputArea.innerHTML = ""; // Clear the output area
+function showImages(brand, model, year, data, yearButton) {
+  // Check if images section already exists
+  if (yearButton.nextElementSibling && yearButton.nextElementSibling.classList.contains("images-section")) {
+    yearButton.nextElementSibling.remove(); // Remove existing images section
+    return;
+  }
+
+  // Create a new section for images
+  const imagesSection = document.createElement("div");
+  imagesSection.classList.add("images-section");
 
   // Filter images for the selected brand, model, and year
   const images = Object.entries(data).filter(([key]) =>
@@ -99,6 +114,9 @@ function showImages(brand, model, year, data) {
     img.alt = key;
     img.style.maxWidth = "200px";
     img.style.margin = "10px";
-    outputArea.appendChild(img);
+    imagesSection.appendChild(img);
   });
+
+  // Insert the images section after the year button
+  yearButton.after(imagesSection);
 }
