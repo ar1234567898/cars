@@ -6,117 +6,117 @@ fetch("js/image_sources.json")
     return response.json();
   })
   .then((data) => {
-    const buttonsArea = document.getElementById("buttonsArea");
+    const brandsSection = document.getElementById("brandsSection");
 
-    // Extract unique brands from the keys
-    const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))];
+    // Extract unique brands from the keys and sort alphabetically
+    const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort();
 
     // Create buttons for each brand
     brands.forEach((brand) => {
       const brandButton = document.createElement("button");
       brandButton.textContent = brand;
-      brandButton.addEventListener("click", () => showModels(brand, data, brandButton));
-      buttonsArea.appendChild(brandButton);
+      brandButton.addEventListener("click", () => showModels(brand, data));
+      brandsSection.appendChild(brandButton);
     });
   })
   .catch((error) => {
-    const buttonsArea = document.getElementById("buttonsArea");
-    buttonsArea.textContent = `Error: ${error.message}`;
+    const brandsSection = document.getElementById("brandsSection");
+    brandsSection.textContent = `Error: ${error.message}`;
   });
 
-// Function to show models for a selected brand
-function showModels(brand, data, brandButton) {
-  // Check if models section already exists
-  if (brandButton.nextElementSibling && brandButton.nextElementSibling.classList.contains("models-section")) {
-    brandButton.nextElementSibling.remove(); // Remove existing models section
-    return;
-  }
+function showModels(brand, data) {
+  const modelsSection = document.getElementById("modelsSection");
+  modelsSection.innerHTML = ""; // Clear previous models
 
-  // Create a new section for models
-  const modelsSection = document.createElement("div");
-  modelsSection.classList.add("models-section");
-
-  // Extract unique models for the selected brand
+  // Extract unique models for the selected brand and sort alphabetically
   const models = [
     ...new Set(
       Object.keys(data)
         .filter((key) => key.startsWith(brand))
         .map((key) => key.split("/")[1])
     ),
-  ];
+  ].sort();
 
-  // Add model buttons to the new section
   models.forEach((model) => {
     const modelButton = document.createElement("button");
     modelButton.textContent = model;
-    modelButton.addEventListener("click", () => showYears(brand, model, data, modelButton));
+    modelButton.addEventListener("click", () => showYears(brand, model, data));
     modelsSection.appendChild(modelButton);
   });
 
-  // Insert the models section after the brand button
-  brandButton.after(modelsSection);
+  document.getElementById("yearsSection").innerHTML = ""; // Clear years
+  document.getElementById("imagesSection").innerHTML = ""; // Clear images
 }
 
-// Function to show years for a selected model
-function showYears(brand, model, data, modelButton) {
-  // Check if years section already exists
-  if (modelButton.nextElementSibling && modelButton.nextElementSibling.classList.contains("years-section")) {
-    modelButton.nextElementSibling.remove(); // Remove existing years section
-    return;
-  }
+function showYears(brand, model, data) {
+  const yearsSection = document.getElementById("yearsSection");
+  yearsSection.innerHTML = ""; // Clear previous years
 
-  // Create a new section for years
-  const yearsSection = document.createElement("div");
-  yearsSection.classList.add("years-section");
-
-  // Extract unique years for the selected model
+  // Extract unique years for the selected brand and model and sort numerically
   const years = [
     ...new Set(
       Object.keys(data)
         .filter((key) => key.startsWith(`${brand}/${model}`))
         .map((key) => key.split("/")[2])
     ),
-  ];
+  ].sort((a, b) => a - b);
 
-  // Add year buttons to the new section
   years.forEach((year) => {
     const yearButton = document.createElement("button");
     yearButton.textContent = year;
-    yearButton.addEventListener("click", () => showImages(brand, model, year, data, yearButton));
+    yearButton.addEventListener("click", () => showImages(brand, model, year, data));
     yearsSection.appendChild(yearButton);
   });
 
-  // Insert the years section after the model button
-  modelButton.after(yearsSection);
+  document.getElementById("imagesSection").innerHTML = ""; // Clear images
 }
 
-// Function to show images for a selected year
-function showImages(brand, model, year, data, yearButton) {
-  // Check if images section already exists
-  if (yearButton.nextElementSibling && yearButton.nextElementSibling.classList.contains("images-section")) {
-    yearButton.nextElementSibling.remove(); // Remove existing images section
-    return;
-  }
-
-  // Create a new section for images
-  const imagesSection = document.createElement("div");
-  imagesSection.classList.add("images-section");
+function showImages(brand, model, year, data) {
+  const imagesSection = document.getElementById("imagesSection");
+  imagesSection.innerHTML = ""; // Clear previous images
 
   // Filter images for the selected brand, model, and year
   const images = Object.entries(data).filter(([key]) =>
     key.startsWith(`${brand}/${model}/${year}`)
   );
 
-  // Display images
   images.forEach(([key, imageUrl]) => {
+    const imageContainer = document.createElement("div"); // Create a container for the image
+    imageContainer.classList.add("image-container");
+
     const img = document.createElement("img");
     img.src = imageUrl;
     img.alt = key;
-    img.style.maxWidth = "200px";
-    img.style.margin = "10px";
-    imagesSection.appendChild(img);
-  });
+    img.onerror = () => (img.src = "img/default.png"); // Fallback for unavailable images
 
-  // Insert the images section after the year button
-  yearButton.after(imagesSection);
+    // Add click event to open modal
+    img.addEventListener("click", () => openModal(imageUrl, brand, model, year));
+
+    imageContainer.appendChild(img); // Add the image to the container
+    imagesSection.appendChild(imageContainer); // Add the container to the section
+  });
 }
+
+// Function to open the modal
+function openModal(imageUrl, brand, model, year) {
+  const modal = document.getElementById("imageModal");
+  const modalImage = document.getElementById("modalImage");
+  const modalText = document.getElementById("modalText");
+
+  modal.style.display = "block"; // Show the modal
+  modalImage.src = imageUrl; // Set the image source
+  modalText.textContent = `${brand} - ${model} - ${year}`; // Set the text content
+}
+
+// Close the modal when the close button is clicked
+document.querySelector(".close").addEventListener("click", () => {
+  document.getElementById("imageModal").style.display = "none";
+});
+
+// Close the modal when clicking outside the modal content
+window.addEventListener("click", (event) => {
+  const modal = document.getElementById("imageModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+});
