@@ -7,8 +7,19 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
+    <div id="preloader" class="preloader">
+      <div class="spinner"></div>
+    </div>
     <div class="container">
       <h1>Car Models Viewer</h1>
+      <div class="file-selector">
+        <label for="jsonSelector">Select Data Source:</label>
+        <select id="jsonSelector">
+          <option value="js/image_sources.json">Image Sources</option>
+          <option value="js/sample.json">Sample Data</option>
+        </select>
+        <button id="loadDataButton">Load Data</button>
+      </div>
       <div class="sections">
         <div id="brandsSection" class="section brands-section">
           <!-- Car brands will be dynamically added here -->
@@ -29,6 +40,8 @@
         <span class="close">&times;</span>
         <img id="modalImage" src="" alt="Car Image" />
         <p id="modalText"></p>
+        <span class="arrow left-arrow" id="prevArrow">&#10094;</span>
+        <span class="arrow right-arrow" id="nextArrow">&#10095;</span>
       </div>
     </div>
     <script src="js/scripts.js"></script>
