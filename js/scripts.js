@@ -1,28 +1,61 @@
-fetch("js/image_sources.json")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then((data) => {
-    const brandsSection = document.getElementById("brandsSection");
+let currentImageIndex = 0;
+let currentImages = [];
 
-    // Extract unique brands from the keys and sort alphabetically
-    const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort();
+// Show the preloader
+function showPreloader() {
+  document.getElementById("preloader").style.display = "flex";
+}
 
-    // Create buttons for each brand
-    brands.forEach((brand) => {
-      const brandButton = document.createElement("button");
-      brandButton.textContent = brand;
-      brandButton.addEventListener("click", () => showModels(brand, data));
-      brandsSection.appendChild(brandButton);
+// Hide the preloader
+function hidePreloader() {
+  document.getElementById("preloader").style.display = "none";
+}
+
+// Function to load data from the selected JSON file
+function loadData() {
+  const jsonSelector = document.getElementById("jsonSelector");
+  const selectedFile = jsonSelector.value;
+
+  fetch(selectedFile)
+    .then((response) => {
+      showPreloader(); // Show preloader while fetching data
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      hidePreloader(); // Hide preloader once data is loaded
+      populateBrands(data); // Populate the brands section
+    })
+    .catch((error) => {
+      hidePreloader(); // Hide preloader if there's an error
+      const brandsSection = document.getElementById("brandsSection");
+      brandsSection.textContent = `Error: ${error.message}`;
     });
-  })
-  .catch((error) => {
-    const brandsSection = document.getElementById("brandsSection");
-    brandsSection.textContent = `Error: ${error.message}`;
+}
+
+// Populate the brands section
+function populateBrands(data) {
+  const brandsSection = document.getElementById("brandsSection");
+  brandsSection.innerHTML = ""; // Clear previous brands
+
+  // Extract unique brands from the keys and sort alphabetically
+  const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort();
+
+  // Create buttons for each brand
+  brands.forEach((brand) => {
+    const brandButton = document.createElement("button");
+    brandButton.textContent = brand;
+    brandButton.addEventListener("click", () => showModels(brand, data));
+    brandsSection.appendChild(brandButton);
   });
+
+  // Clear other sections
+  document.getElementById("modelsSection").innerHTML = "";
+  document.getElementById("yearsSection").innerHTML = "";
+  document.getElementById("imagesSection").innerHTML = "";
+}
 
 function showModels(brand, data) {
   const modelsSection = document.getElementById("modelsSection");
@@ -75,48 +108,104 @@ function showImages(brand, model, year, data) {
   const imagesSection = document.getElementById("imagesSection");
   imagesSection.innerHTML = ""; // Clear previous images
 
-  // Filter images for the selected brand, model, and year
   const images = Object.entries(data).filter(([key]) =>
     key.startsWith(`${brand}/${model}/${year}`)
   );
 
-  images.forEach(([key, imageUrl]) => {
-    const imageContainer = document.createElement("div"); // Create a container for the image
-    imageContainer.classList.add("image-container");
+  currentImages = []; // Reset the current images for navigation
 
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = key;
-    img.onerror = () => (img.src = "img/default.png"); // Fallback for unavailable images
+  const validImages = []; // Store valid images after filtering
 
-    // Add click event to open modal
-    img.addEventListener("click", () => openModal(imageUrl, brand, model, year));
+  // Process images to filter out small and unavailable ones
+  const promises = images.map(([key, imageUrl]) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = imageUrl;
 
-    imageContainer.appendChild(img); // Add the image to the container
-    imagesSection.appendChild(imageContainer); // Add the container to the section
+      img.onload = () => {
+        if (img.naturalWidth > 1 && img.naturalHeight > 1) {
+          validImages.push({ key, imageUrl }); // Add valid images to the list
+        }
+        resolve();
+      };
+
+      img.onerror = () => resolve(); // Ignore invalid images
+    });
+  });
+
+  // Once all images are processed, display them one by one
+  Promise.all(promises).then(() => {
+    currentImages = validImages; // Update the current images for navigation
+
+    validImages.forEach(({ key, imageUrl }, index) => {
+      setTimeout(() => {
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = key;
+
+        // Add click event to open modal
+        img.addEventListener("click", () => openModal(index, brand, model, year));
+
+        imageContainer.appendChild(img);
+        imagesSection.appendChild(imageContainer);
+      }, index * 50); // Delay each image by 200ms for a staggered effect
+    });
   });
 }
 
 // Function to open the modal
-function openModal(imageUrl, brand, model, year) {
+function openModal(index, brand, model, year) {
+  currentImageIndex = index; // Set the current image index
   const modal = document.getElementById("imageModal");
   const modalImage = document.getElementById("modalImage");
   const modalText = document.getElementById("modalText");
 
-  modal.style.display = "block"; // Show the modal
+  const [key, imageUrl] = currentImages[currentImageIndex];
+  modal.classList.add("show"); // Add the 'show' class to fade in the modal
   modalImage.src = imageUrl; // Set the image source
   modalText.textContent = `${brand} - ${model} - ${year}`; // Set the text content
 }
 
+// Function to navigate to the next image
+function showNextImage() {
+  if (currentImageIndex < currentImages.length - 1) {
+    currentImageIndex++;
+    const [key, imageUrl] = currentImages[currentImageIndex];
+    const modalImage = document.getElementById("modalImage");
+    modalImage.src = imageUrl;
+  }
+}
+
+// Function to navigate to the previous image
+function showPrevImage() {
+  if (currentImageIndex > 0) {
+    currentImageIndex--;
+    const [key, imageUrl] = currentImages[currentImageIndex];
+    const modalImage = document.getElementById("modalImage");
+    modalImage.src = imageUrl;
+  }
+}
+
 // Close the modal when the close button is clicked
 document.querySelector(".close").addEventListener("click", () => {
-  document.getElementById("imageModal").style.display = "none";
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("show"); // Remove the 'show' class to fade out the modal
 });
 
 // Close the modal when clicking outside the modal content
 window.addEventListener("click", (event) => {
   const modal = document.getElementById("imageModal");
   if (event.target === modal) {
-    modal.style.display = "none";
+    modal.classList.remove("show"); // Remove the 'show' class to fade out the modal
   }
 });
+
+// Add event listeners for navigation arrows
+document.getElementById("nextArrow").addEventListener("click", showNextImage);
+document.getElementById("prevArrow").addEventListener("click", showPrevImage);
+
+// Add event listener to the load data button
+document.getElementById("loadDataButton").addEventListener("click", loadData);
