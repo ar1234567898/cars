@@ -112,12 +112,15 @@ function showImages(brand, model, year, data) {
     key.startsWith(`${brand}/${model}/${year}`)
   );
 
+  console.log("Filtered images:", images); // Debug the filtered images
+
   currentImages = []; // Reset the current images for navigation
 
   const validImages = []; // Store valid images after filtering
 
   // Process images to filter out small and unavailable ones
   const promises = images.map(([key, imageUrl]) => {
+    console.log("Processing image:", key, imageUrl); // Debug each image entry
     return new Promise((resolve) => {
       const img = new Image();
       img.src = imageUrl;
@@ -163,7 +166,8 @@ function openModal(index, brand, model, year) {
   const modalImage = document.getElementById("modalImage");
   const modalText = document.getElementById("modalText");
 
-  const [key, imageUrl] = currentImages[currentImageIndex];
+  // Access the object properties directly
+  const { key, imageUrl } = currentImages[currentImageIndex];
   modal.classList.add("show"); // Add the 'show' class to fade in the modal
   modalImage.src = imageUrl; // Set the image source
   modalText.textContent = `${brand} - ${model} - ${year}`; // Set the text content
@@ -173,20 +177,26 @@ function openModal(index, brand, model, year) {
 function showNextImage() {
   if (currentImageIndex < currentImages.length - 1) {
     currentImageIndex++;
-    const [key, imageUrl] = currentImages[currentImageIndex];
-    const modalImage = document.getElementById("modalImage");
-    modalImage.src = imageUrl;
+  } else {
+    currentImageIndex = 0; // Loop back to the first image
   }
+
+  const { key, imageUrl } = currentImages[currentImageIndex];
+  const modalImage = document.getElementById("modalImage");
+  modalImage.src = imageUrl;
 }
 
 // Function to navigate to the previous image
 function showPrevImage() {
   if (currentImageIndex > 0) {
     currentImageIndex--;
-    const [key, imageUrl] = currentImages[currentImageIndex];
+    
+  } else{
+    currentImageIndex = currentImages.length - 1; // Loop back to the last image
+  }
+    const {key, imageUrl} = currentImages[currentImageIndex];
     const modalImage = document.getElementById("modalImage");
     modalImage.src = imageUrl;
-  }
 }
 
 // Close the modal when the close button is clicked
