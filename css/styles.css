@@ -129,8 +129,9 @@ img {
 }
 
 .modal-content img {
-    max-width: 100%;
-    max-height: calc(100% - 60px); /* Adjust for padding and text */
+    width: 500px; /* Set a fixed width */
+    height: 300px; /* Set a fixed height */
+    object-fit: cover; /* Ensure the image fits within the dimensions */
     display: block;
     margin: 0 auto;
     border-radius: 4px;
