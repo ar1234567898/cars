@@ -17,51 +17,51 @@ function loadData() {
   const selectedFile = jsonSelector.value;
 
   fetch(selectedFile)
-    .then((response) => {
-      showPreloader(); // Show preloader while fetching data
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((data) => {
-      hidePreloader(); // Hide preloader once data is loaded
-      populateBrands(data); // Populate the brands section
+      // Call the function to populate brand buttons
+      showBrands(data);
     })
     .catch((error) => {
-      hidePreloader(); // Hide preloader if there's an error
-      const brandsSection = document.getElementById("brandsSection");
-      brandsSection.textContent = `Error: ${error.message}`;
+      console.error("Error loading data:", error);
     });
 }
 
-// Populate the brands section
-function populateBrands(data) {
+function showBrands(data) {
   const brandsSection = document.getElementById("brandsSection");
-  brandsSection.innerHTML = ""; // Clear previous brands
+  brandsSection.innerHTML = ""; // Clear previous buttons
 
-  // Extract unique brands from the keys and sort alphabetically
-  const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort();
+  // Extract and sort the brands alphabetically, ignoring case
+  const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort((a, b) =>
+    a.toLowerCase().localeCompare(b.toLowerCase())
+  );
 
-  // Create buttons for each brand
-  brands.forEach((brand) => {
+  brands.forEach((brand, index) => {
     const brandButton = document.createElement("button");
     brandButton.textContent = brand;
-    brandButton.addEventListener("click", () => showModels(brand, data));
-    brandsSection.appendChild(brandButton);
-  });
 
-  // Clear other sections
-  document.getElementById("modelsSection").innerHTML = "";
-  document.getElementById("yearsSection").innerHTML = "";
-  document.getElementById("imagesSection").innerHTML = "";
+    // Add click event to toggle active state
+    brandButton.addEventListener("click", () => {
+      Array.from(brandsSection.children).forEach((btn) =>
+        btn.classList.remove("active")
+      );
+      brandButton.classList.add("active");
+      showModels(brand, data);
+    });
+
+    brandsSection.appendChild(brandButton);
+
+    // Add the "visible" class with a slight delay for each button
+    setTimeout(() => {
+      brandButton.classList.add("visible");
+    }, index * 100); // Delay based on the index for a staggered effect
+  });
 }
 
 function showModels(brand, data) {
   const modelsSection = document.getElementById("modelsSection");
   modelsSection.innerHTML = ""; // Clear previous models
 
-  // Extract unique models for the selected brand and sort alphabetically
   const models = [
     ...new Set(
       Object.keys(data)
@@ -70,22 +70,32 @@ function showModels(brand, data) {
     ),
   ].sort();
 
-  models.forEach((model) => {
+  models.forEach((model, index) => {
     const modelButton = document.createElement("button");
     modelButton.textContent = model;
-    modelButton.addEventListener("click", () => showYears(brand, model, data));
-    modelsSection.appendChild(modelButton);
-  });
 
-  document.getElementById("yearsSection").innerHTML = ""; // Clear years
-  document.getElementById("imagesSection").innerHTML = ""; // Clear images
+    // Add click event to toggle active state
+    modelButton.addEventListener("click", () => {
+      Array.from(modelsSection.children).forEach((btn) =>
+        btn.classList.remove("active")
+      );
+      modelButton.classList.add("active");
+      showYears(brand, model, data);
+    });
+
+    modelsSection.appendChild(modelButton);
+
+    // Add the "visible" class with a slight delay for each button
+    setTimeout(() => {
+      modelButton.classList.add("visible");
+    }, index * 100); // Delay based on the index for a staggered effect
+  });
 }
 
 function showYears(brand, model, data) {
   const yearsSection = document.getElementById("yearsSection");
-  yearsSection.innerHTML = ""; // Clear previous years
+  yearsSection.innerHTML = ""; // Clear previous buttons
 
-  // Extract unique years for the selected brand and model and sort numerically
   const years = [
     ...new Set(
       Object.keys(data)
@@ -94,25 +104,44 @@ function showYears(brand, model, data) {
     ),
   ].sort((a, b) => a - b);
 
-  years.forEach((year) => {
+  years.forEach((year, index) => {
     const yearButton = document.createElement("button");
     yearButton.textContent = year;
-    yearButton.addEventListener("click", () => showImages(brand, model, year, data));
-    yearsSection.appendChild(yearButton);
-  });
 
-  document.getElementById("imagesSection").innerHTML = ""; // Clear images
+    // Add click event to toggle active state
+    yearButton.addEventListener("click", () => {
+      Array.from(yearsSection.children).forEach((btn) =>
+        btn.classList.remove("active")
+      );
+      yearButton.classList.add("active");
+      showImages(brand, model, year, data);
+    });
+
+    yearsSection.appendChild(yearButton);
+
+    // Add the "visible" class with a slight delay for each button
+    setTimeout(() => {
+      yearButton.classList.add("visible");
+    }, index * 100); // Delay based on the index for a staggered effect
+  });
 }
 
 function showImages(brand, model, year, data) {
   const imagesSection = document.getElementById("imagesSection");
-  imagesSection.innerHTML = ""; // Clear previous images
+
+  // Clear previous images
+  imagesSection.innerHTML = "";
+
+  // Create and show the preloader
+  const imagesPreloader = document.createElement("div");
+  imagesPreloader.id = "imagesPreloader";
+  imagesPreloader.classList.add("preloader");
+  imagesPreloader.innerHTML = '<div class="spinner"></div>';
+  imagesSection.appendChild(imagesPreloader);
 
   const images = Object.entries(data).filter(([key]) =>
     key.startsWith(`${brand}/${model}/${year}`)
   );
-
-  console.log("Filtered images:", images); // Debug the filtered images
 
   currentImages = []; // Reset the current images for navigation
 
@@ -120,7 +149,6 @@ function showImages(brand, model, year, data) {
 
   // Process images to filter out small and unavailable ones
   const promises = images.map(([key, imageUrl]) => {
-    console.log("Processing image:", key, imageUrl); // Debug each image entry
     return new Promise((resolve) => {
       const img = new Image();
       img.src = imageUrl;
@@ -140,6 +168,9 @@ function showImages(brand, model, year, data) {
   Promise.all(promises).then(() => {
     currentImages = validImages; // Update the current images for navigation
 
+    // Remove the preloader
+    imagesPreloader.remove();
+
     validImages.forEach(({ key, imageUrl }, index) => {
       setTimeout(() => {
         const imageContainer = document.createElement("div");
@@ -154,7 +185,7 @@ function showImages(brand, model, year, data) {
 
         imageContainer.appendChild(img);
         imagesSection.appendChild(imageContainer);
-      }, index * 50); // Delay each image by 200ms for a staggered effect
+      }, index * 50); // Delay each image by 50ms for a staggered effect
     });
   });
 }
@@ -166,37 +197,64 @@ function openModal(index, brand, model, year) {
   const modalImage = document.getElementById("modalImage");
   const modalText = document.getElementById("modalText");
 
-  // Access the object properties directly
   const { key, imageUrl } = currentImages[currentImageIndex];
   modal.classList.add("show"); // Add the 'show' class to fade in the modal
   modalImage.src = imageUrl; // Set the image source
+  modalImage.classList.add("active"); // Add the active class for the initial image
   modalText.textContent = `${brand} - ${model} - ${year}`; // Set the text content
 }
 
 // Function to navigate to the next image
 function showNextImage() {
-  if (currentImageIndex < currentImages.length - 1) {
-    currentImageIndex++;
-  } else {
-    currentImageIndex = 0; // Loop back to the first image
-  }
-
-  const { key, imageUrl } = currentImages[currentImageIndex];
   const modalImage = document.getElementById("modalImage");
-  modalImage.src = imageUrl;
+
+  // Add sliding-out animation for the current image
+  modalImage.classList.remove("active");
+  modalImage.classList.add("slide-left");
+
+  // Wait for the animation to complete before updating the image
+  setTimeout(() => {
+    currentImageIndex = (currentImageIndex + 1) % currentImages.length; // Loop to the first image if at the end
+    const { key, imageUrl } = currentImages[currentImageIndex];
+
+    // Update the image source and add the entering animation
+    modalImage.src = imageUrl;
+    modalImage.classList.remove("slide-left");
+    modalImage.classList.add("enter-right");
+
+    // Wait for the entering animation to complete, then make it active
+    setTimeout(() => {
+      modalImage.classList.remove("enter-right");
+      modalImage.classList.add("active");
+    }, 300); // Match the CSS transition duration
+  }, 300); // Match the CSS transition duration
 }
 
 // Function to navigate to the previous image
 function showPrevImage() {
-  if (currentImageIndex > 0) {
-    currentImageIndex--;
-    
-  } else{
-    currentImageIndex = currentImages.length - 1; // Loop back to the last image
-  }
-    const {key, imageUrl} = currentImages[currentImageIndex];
-    const modalImage = document.getElementById("modalImage");
+  const modalImage = document.getElementById("modalImage");
+
+  // Add sliding-out animation for the current image
+  modalImage.classList.remove("active");
+  modalImage.classList.add("slide-right");
+
+  // Wait for the animation to complete before updating the image
+  setTimeout(() => {
+    currentImageIndex =
+      (currentImageIndex - 1 + currentImages.length) % currentImages.length; // Loop to the last image if at the beginning
+    const { key, imageUrl } = currentImages[currentImageIndex];
+
+    // Update the image source and add the entering animation
     modalImage.src = imageUrl;
+    modalImage.classList.remove("slide-right");
+    modalImage.classList.add("enter-left");
+
+    // Wait for the entering animation to complete, then make it active
+    setTimeout(() => {
+      modalImage.classList.remove("enter-left");
+      modalImage.classList.add("active");
+    }, 300); // Match the CSS transition duration
+  }, 300); // Match the CSS transition duration
 }
 
 // Close the modal when the close button is clicked
@@ -219,3 +277,10 @@ document.getElementById("prevArrow").addEventListener("click", showPrevImage);
 
 // Add event listener to the load data button
 document.getElementById("loadDataButton").addEventListener("click", loadData);
+
+window.addEventListener("load", () => {
+  const generalPreloader = document.getElementById("preloader");
+  if (generalPreloader) {
+    generalPreloader.style.display = "none"; // Hide the general preloader
+  }
+});
