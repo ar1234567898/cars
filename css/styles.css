@@ -1,264 +1,355 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
 }
 
 .container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
 h1 {
-    margin-bottom: 20px;
-    color: #333;
-    text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
 }
 
 .sections {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    overflow-y: auto;
-    max-height: 500px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  overflow-y: auto;
+  max-height: 500px;
 }
 
 .images-section {
-    flex: 2; /* Make the images section the widest */
-    display: flex;
-    flex-wrap: wrap; /* Allow images to wrap */
-    gap: 10px;
-    justify-content: space-between;
+  flex: 2; /* Make the images section the widest */
+  display: flex;
+  flex-wrap: wrap; /* Allow images to wrap */
+  gap: 10px;
+  justify-content: space-between;
 }
 
 .image-container {
-    width: 50px; /* 5 containers per row with spacing */
-    height: 50px; /* Fixed height for the container */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    overflow: hidden; /* Ensure images don't overflow the container */
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-    opacity: 0; /* Start hidden */
-    animation: fadeIn 0.5s ease forwards; /* Fade-in animation */
+  width: 50px; /* 5 containers per row with spacing */
+  height: 50px; /* Fixed height for the container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  overflow: hidden; /* Ensure images don't overflow the container */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  opacity: 0; /* Start hidden */
+  animation: fadeIn 0.5s ease forwards; /* Fade-in animation */
 }
 
 .image-container:hover {
-    transform: scale(1.1); /* Slightly enlarge the container on hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
+  transform: scale(1.1); /* Slightly enlarge the container on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow effect */
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
+/* General button styles */
 button {
-    padding: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: left;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05); /* Slightly enlarge the button on hover */
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+button.active {
+  background-color: #0056b3; /* Darker blue */
+  color: white; /* Ensure text is visible */
+  border: 2px solid #003f7f; /* Optional: Add a border for emphasis */
+}
+
+/* Scoped styles for buttons in specific sections */
+
+
+#brandsSection button {
+  opacity: 0; /* Start hidden */
+  transform: translateY(10px); /* Start slightly below */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+#brandsSection button.visible {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Move to original position */
+}
+
+#modelsSection button,
+#yearsSection button {
+  opacity: 0; /* Start hidden */
+  transform: translateY(10px); /* Start slightly below */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+#modelsSection button.visible,
+#yearsSection button.visible {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Move to original position */
 }
 
 img {
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
 }
 
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
-    opacity: 0; /* Start with 0 opacity */
-    transition: opacity 0.3s ease; /* Smooth fade-in and fade-out */
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+  opacity: 0; /* Start with 0 opacity */
+  transition: opacity 0.3s ease; /* Smooth fade-in and fade-out */
 }
 
 .modal.show {
-    display: block;
-    opacity: 1; /* Fully visible */
+  display: block;
+  opacity: 1; /* Fully visible */
 }
 
 .modal-content {
-    position: relative;
-    margin: 10% auto; /* Center the modal */
-    padding: 20px;
-    width: 600px; /* Fixed width */
-    height: 400px; /* Fixed height */
-    background: #fff;
-    border-radius: 8px;
-    text-align: center;
-    overflow: hidden; /* Prevent content overflow */
+  position: relative;
+  margin: 10% auto; /* Center the modal */
+  padding: 20px;
+  width: 600px; /* Fixed width */
+  height: 400px; /* Fixed height */
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .modal-content img {
-    width: 500px; /* Set a fixed width */
-    height: 300px; /* Set a fixed height */
-    object-fit: cover; /* Ensure the image fits within the dimensions */
-    display: block;
-    margin: 0 auto;
-    border-radius: 4px;
+  width: 500px; /* Set a fixed width */
+  height: 300px; /* Set a fixed height */
+  object-fit: cover; /* Ensure the image fits within the dimensions */
+  display: block;
+  margin: 0 auto;
+  border-radius: 4px;
+  position: absolute; /* Position for sliding effect */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for centering */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Reduced duration */
+  opacity: 0; /* Start hidden */
+}
+
+.modal-content img.active {
+  transform: translate(-50%, -50%); /* Center the active image */
+  opacity: 1; /* Fully visible */
+}
+
+.modal-content img.slide-left {
+  transform: translate(-150%, -50%); /* Slide out to the left */
+  opacity: 0; /* Fade out */
+}
+
+.modal-content img.slide-right {
+  transform: translate(50%, -50%); /* Slide out to the right */
+  opacity: 0; /* Fade out */
+}
+
+.modal-content img.enter-left {
+  transform: translate(-150%, -50%); /* Enter from the left */
+  opacity: 0;
+}
+
+.modal-content img.enter-right {
+  transform: translate(150%, -50%); /* Enter from the right */
+  opacity: 0;
 }
 
 .modal-content p {
-    position: absolute;
-    bottom: 10px; /* Position the text at the bottom */
-    left: 0;
-    width: 100%;
-    margin: 0;
-    padding: 10px;
-    font-size: 16px;
-    color: #333;
-    background-color: rgba(255, 255, 255, 0.8); /* Add a semi-transparent background */
-    text-align: center;
-    word-wrap: break-word; /* Ensure long text wraps */
-    border-top: 1px solid #ccc; /* Optional: Add a border to separate the text */
+  position: absolute;
+  bottom: 10px; /* Position the text at the bottom */
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Add a semi-transparent background */
+  text-align: center;
+  word-wrap: break-word; /* Ensure long text wraps */
+  border-top: 1px solid #ccc; /* Optional: Add a border to separate the text */
+  font-weight: bold; /* Make the text bold */
+  margin-top: 10px; /* Add some spacing above the text */
 }
 
 .close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /* Preloader styles */
 .preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
-    display: none; /* Hide the preloader by default */
-    justify-content: center;
-    align-items: center;
-    z-index: 2000; /* Ensure it appears above all other elements */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  z-index: 2000; /* Ensure it appears above all other elements */
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #ccc;
-    border-top: 5px solid #007BFF;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 36px;
-    color: #333;
-    cursor: pointer;
-    user-select: none;
-    z-index: 1001;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 36px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+  z-index: 1001;
 }
 
 .left-arrow {
-    left: 10px;
+  left: 10px;
 }
 
 .right-arrow {
-    right: 10px;
+  right: 10px;
 }
 
 .arrow:hover {
-    color: #007BFF;
+  color: #007bff;
 }
 
 .file-selector {
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .file-selector label {
-    font-size: 16px;
-    color: #333;
+  font-size: 16px;
+  color: #333;
 }
 
 .file-selector select {
-    padding: 5px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .file-selector button {
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .file-selector select,
 .file-selector button {
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .file-selector button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05); /* Slightly enlarge the button on hover */
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000; /* Ensure it appears above all other elements */
+}
+
+#preloader .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
