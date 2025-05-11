@@ -226,8 +226,8 @@ function showNextImage() {
     setTimeout(() => {
       modalImage.classList.remove("enter-right");
       modalImage.classList.add("active");
-    }, 300); // Match the CSS transition duration
-  }, 300); // Match the CSS transition duration
+    }, 100); // Match the CSS transition duration
+  }, 100); // Match the CSS transition duration 
 }
 
 // Function to navigate to the previous image
