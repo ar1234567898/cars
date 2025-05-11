@@ -173,7 +173,7 @@ img {
   top: 50%; /* Center vertically */
   left: 50%; /* Center horizontally */
   transform: translate(-50%, -50%); /* Adjust for centering */
-  transition: transform 0.3s ease, opacity 0.3s ease; /* Reduced duration */
+  transition: transform 0.1s ease, opacity 0.1s ease; /* Reduced duration */
   opacity: 0; /* Start hidden */
 }
 
