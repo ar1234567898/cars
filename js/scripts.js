@@ -54,7 +54,7 @@ function showBrands(data) {
     // Add the "visible" class with a slight delay for each button
     setTimeout(() => {
       brandButton.classList.add("visible");
-    }, index * 100); // Delay based on the index for a staggered effect
+    }, index * 50); // Delay based on the index for a staggered effect
   });
 }
 
