@@ -16,6 +16,16 @@ function loadData() {
   const jsonSelector = document.getElementById("jsonSelector");
   const selectedFile = jsonSelector.value;
 
+  const brands = document.getElementById("brandsSection");
+  const models = document.getElementById("modelsSection");
+  const years = document.getElementById("yearsSection");
+  const images = document.getElementById("imagesSection");
+
+  brands.innerHTML = ""; // Clear previous brands
+  models.innerHTML = ""; // Clear previous models
+  years.innerHTML = ""; // Clear previous years
+  images.innerHTML = ""; // Clear previous images
+
   fetch(selectedFile)
     .then((response) => response.json())
     .then((data) => {
