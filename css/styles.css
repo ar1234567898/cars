@@ -160,6 +160,7 @@ img {
   border-radius: 8px;
   text-align: center;
   overflow: hidden; /* Prevent content overflow */
+    resize:both; /* Allow resizing */
 }
 
 .modal-content img {
