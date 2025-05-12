@@ -18,7 +18,6 @@ function loadData() {
   const preloader = document.getElementById("preloader");
   preloader.style.display = "flex"; // Show the preloader
 
-
   const brands = document.getElementById("brandsSection");
   const models = document.getElementById("modelsSection");
   const years = document.getElementById("yearsSection");
@@ -46,9 +45,9 @@ function showBrands(data) {
   brandsSection.innerHTML = ""; // Clear previous buttons
 
   // Extract and sort the brands alphabetically, ignoring case
-  const brands = [...new Set(Object.keys(data).map((key) => key.split("/")[0]))].sort((a, b) =>
-    a.toLowerCase().localeCompare(b.toLowerCase())
-  );
+  const brands = [
+    ...new Set(Object.keys(data).map((key) => key.split("/")[0])),
+  ].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
   brands.forEach((brand, index) => {
     const brandButton = document.createElement("button");
@@ -56,11 +55,27 @@ function showBrands(data) {
 
     // Add click event to toggle active state
     brandButton.addEventListener("click", () => {
-      Array.from(brandsSection.children).forEach((btn) =>
-        btn.classList.remove("active")
-      );
-      brandButton.classList.add("active");
-      showModels(brand, data);
+      const modelsSection = document.getElementById("modelsSection");
+      const yearsSection = document.getElementById("yearsSection");
+      const imagesSection = document.getElementById("imagesSection");
+
+      if (brandButton.classList.contains("active")) {
+        // If the button is already active, clear subsequent sections and deactivate the button
+        modelsSection.innerHTML = "";
+        yearsSection.innerHTML = "";
+        imagesSection.innerHTML = "";
+        brandButton.classList.remove("active");
+      } else {
+        // Otherwise, clear subsequent sections, activate the button, and show models
+        Array.from(brandsSection.children).forEach((btn) =>
+          btn.classList.remove("active")
+        );
+        modelsSection.innerHTML = "";
+        yearsSection.innerHTML = "";
+        imagesSection.innerHTML = "";
+        brandButton.classList.add("active");
+        showModels(brand, data);
+      }
     });
 
     brandsSection.appendChild(brandButton);
@@ -90,11 +105,24 @@ function showModels(brand, data) {
 
     // Add click event to toggle active state
     modelButton.addEventListener("click", () => {
-      Array.from(modelsSection.children).forEach((btn) =>
-        btn.classList.remove("active")
-      );
-      modelButton.classList.add("active");
-      showYears(brand, model, data);
+      const yearsSection = document.getElementById("yearsSection");
+      const imagesSection = document.getElementById("imagesSection");
+
+      if (modelButton.classList.contains("active")) {
+        // If the button is already active, clear subsequent sections and deactivate the button
+        yearsSection.innerHTML = "";
+        imagesSection.innerHTML = "";
+        modelButton.classList.remove("active");
+      } else {
+        // Otherwise, clear subsequent sections, activate the button, and show years
+        Array.from(modelsSection.children).forEach((btn) =>
+          btn.classList.remove("active")
+        );
+        yearsSection.innerHTML = "";
+        imagesSection.innerHTML = "";
+        modelButton.classList.add("active");
+        showYears(brand, model, data);
+      }
     });
 
     modelsSection.appendChild(modelButton);
@@ -124,11 +152,21 @@ function showYears(brand, model, data) {
 
     // Add click event to toggle active state
     yearButton.addEventListener("click", () => {
-      Array.from(yearsSection.children).forEach((btn) =>
-        btn.classList.remove("active")
-      );
-      yearButton.classList.add("active");
-      showImages(brand, model, year, data);
+      const imagesSection = document.getElementById("imagesSection");
+
+      if (yearButton.classList.contains("active")) {
+        // If the button is already active, clear the images section and deactivate the button
+        imagesSection.innerHTML = "";
+        yearButton.classList.remove("active");
+      } else {
+        // Otherwise, clear the images section, activate the button, and show images
+        Array.from(yearsSection.children).forEach((btn) =>
+          btn.classList.remove("active")
+        );
+        imagesSection.innerHTML = "";
+        yearButton.classList.add("active");
+        showImages(brand, model, year, data);
+      }
     });
 
     yearsSection.appendChild(yearButton);
@@ -195,7 +233,9 @@ function showImages(brand, model, year, data) {
         img.alt = key;
 
         // Add click event to open modal
-        img.addEventListener("click", () => openModal(index, brand, model, year));
+        img.addEventListener("click", () =>
+          openModal(index, brand, model, year)
+        );
 
         imageContainer.appendChild(img);
         imagesSection.appendChild(imageContainer);
@@ -314,3 +354,9 @@ window.addEventListener("load", () => {
     generalPreloader.style.display = "none"; // Hide the general preloader
   }
 });
+
+const arrowLeft = document.querySelector(".left-arrow");
+const arrowRight = document.querySelector(".right-arrow");
+
+arrowLeft.addEventListener("click", showPrevImage);
+arrowRight.addEventListener("click", showNextImage);
