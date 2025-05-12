@@ -15,6 +15,9 @@ function hidePreloader() {
 function loadData() {
   const jsonSelector = document.getElementById("jsonSelector");
   const selectedFile = jsonSelector.value;
+  const preloader = document.getElementById("preloader");
+  preloader.style.display = "flex"; // Show the preloader
+
 
   const brands = document.getElementById("brandsSection");
   const models = document.getElementById("modelsSection");
@@ -38,6 +41,7 @@ function loadData() {
 }
 
 function showBrands(data) {
+  preloader.style.display = "none"; // Hide the preloader
   const brandsSection = document.getElementById("brandsSection");
   brandsSection.innerHTML = ""; // Clear previous buttons
 
@@ -212,6 +216,29 @@ function openModal(index, brand, model, year) {
   modalImage.src = imageUrl; // Set the image source
   modalImage.classList.add("active"); // Add the active class for the initial image
   modalText.textContent = `${brand} - ${model} - ${year}`; // Set the text content
+
+  // Add keyboard navigation
+  document.addEventListener("keydown", handleKeyNavigation);
+}
+
+// Function to close the modal and remove the keyboard event listener
+function closeModal() {
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("show"); // Remove the 'show' class to fade out the modal
+
+  // Remove keyboard navigation
+  document.removeEventListener("keydown", handleKeyNavigation);
+}
+
+// Function to handle keyboard navigation
+function handleKeyNavigation(event) {
+  if (event.key === "ArrowRight") {
+    showNextImage(); // Navigate to the next image
+  } else if (event.key === "ArrowLeft") {
+    showPrevImage(); // Navigate to the previous image
+  } else if (event.key === "Escape") {
+    closeModal(); // Close the modal when Escape is pressed
+  }
 }
 
 // Function to navigate to the next image
@@ -237,7 +264,7 @@ function showNextImage() {
       modalImage.classList.remove("enter-right");
       modalImage.classList.add("active");
     }, 100); // Match the CSS transition duration
-  }, 100); // Match the CSS transition duration 
+  }, 100); // Match the CSS transition duration
 }
 
 // Function to navigate to the previous image
@@ -263,27 +290,20 @@ function showPrevImage() {
     setTimeout(() => {
       modalImage.classList.remove("enter-left");
       modalImage.classList.add("active");
-    }, 300); // Match the CSS transition duration
-  }, 300); // Match the CSS transition duration
+    }, 100); // Match the CSS transition duration
+  }, 100); // Match the CSS transition duration
 }
 
 // Close the modal when the close button is clicked
-document.querySelector(".close").addEventListener("click", () => {
-  const modal = document.getElementById("imageModal");
-  modal.classList.remove("show"); // Remove the 'show' class to fade out the modal
-});
+document.querySelector(".close").addEventListener("click", closeModal);
 
 // Close the modal when clicking outside the modal content
 window.addEventListener("click", (event) => {
   const modal = document.getElementById("imageModal");
   if (event.target === modal) {
-    modal.classList.remove("show"); // Remove the 'show' class to fade out the modal
+    closeModal();
   }
 });
-
-// Add event listeners for navigation arrows
-document.getElementById("nextArrow").addEventListener("click", showNextImage);
-document.getElementById("prevArrow").addEventListener("click", showPrevImage);
 
 // Add event listener to the load data button
 document.getElementById("loadDataButton").addEventListener("click", loadData);
