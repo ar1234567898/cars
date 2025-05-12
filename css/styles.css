@@ -100,7 +100,6 @@ button.active {
 
 /* Scoped styles for buttons in specific sections */
 
-
 #brandsSection button {
   opacity: 0; /* Start hidden */
   transform: translateY(10px); /* Start slightly below */
@@ -160,7 +159,6 @@ img {
   border-radius: 8px;
   text-align: center;
   overflow: hidden; /* Prevent content overflow */
-    resize:both; /* Allow resizing */
 }
 
 .modal-content img {
